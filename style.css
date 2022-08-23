@@ -1,0 +1,17 @@
+.n {
+    display: block;
+}
+
+#mazegrid {
+    display: grid;
+    background: yellow;
+    grid-gap: 5px;
+    padding: 5px;
+    width: 500px;
+    height: 500px;
+    grid-template: repeat(2, 1fr) / repeat(2, 1fr);
+}
+
+.gridcell {
+    background-color: slateblue;
+}
