@@ -1,11 +1,13 @@
 "use strict";
 const mazegrid = document.getElementById('mazegrid');
 const generate_btn = document.getElementById('generate btn');
-const nrowstext = document.getElementById('n rows');
-const ncolstext = document.getElementById('n cols');
+const nrowsinput = document.getElementById('n rows');
+const ncolsinput = document.getElementById('n cols');
+const animspeedinput = document.getElementById('anim speed');
 
 // declarations
 let maze_arr = null;
+let init_anim_speed = 100;
 
 function init_maze_arr(nrows, ncols) {
     maze_arr = new Array(nrows);
@@ -25,7 +27,7 @@ function sleep(duration_ms) {
     return new Promise(resolve => setTimeout(resolve, duration_ms));
 }
 
-async function generate_maze(nrows, ncols) {
+async function generate_maze(nrows, ncols, anim_speed_multiplier) {
     init_maze_arr(nrows, ncols);
     mazegrid.innerHTML = '';
 
@@ -33,7 +35,7 @@ async function generate_maze(nrows, ncols) {
     for (let r = 0; r < nrows; r++) {
         for (let c = 0; c < ncols; c++) {
             create_cell(r, c);
-            await sleep(70);
+            await sleep(init_anim_speed * 100 / anim_speed_multiplier);
         }
     }
 }
@@ -42,7 +44,8 @@ async function generate_maze(nrows, ncols) {
 mazegrid.innerHTML = '';
 
 generate_btn.addEventListener('click', () => {
-    let nrows = nrowstext.value;
-    let ncols = ncolstext.value;
-    generate_maze(nrows, ncols);
+    let nrows = nrowsinput.value;
+    let ncols = ncolsinput.value;
+    let anim_speed_multiplier = animspeedinput.value;
+    generate_maze(nrows, ncols, anim_speed_multiplier);
 });

@@ -1,7 +1,6 @@
 #mazegrid {
     display: grid;
     background-color: gray;
-    grid-gap: 2px;
     padding: 5px;
     width: 600px;
     height: 600px;
