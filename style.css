@@ -1,17 +1,40 @@
-.n {
-    display: block;
-}
-
 #mazegrid {
     display: grid;
-    background: yellow;
-    grid-gap: 5px;
+    background-color: gray;
+    grid-gap: 2px;
     padding: 5px;
-    width: 500px;
-    height: 500px;
+    width: 600px;
+    height: 600px;
     grid-template: repeat(2, 1fr) / repeat(2, 1fr);
 }
 
-.gridcell {
-    background-color: slateblue;
+/* cell with no type */
+.mazecell {
+    background-color: purple;
+}
+
+.mazecell.passage {
+    animation: passage_appear 1s forwards;
+}
+
+@keyframes passage_appear {
+    0% {
+        background-color: inherit;
+    }
+    100% {
+        background-color: white;
+    }
+}
+
+.mazecell.wall {
+    animation: wall_appear 1s forwards;
+}
+
+@keyframes wall_appear {
+    0% {
+        background-color: inherit;
+    }
+    100% {
+        background-color: black;
+    }
 }
