@@ -1,10 +1,10 @@
 #mazegrid {
     display: grid;
     background-color: gray;
+    grid-template: repeat(2, 1fr) / repeat(2, 1fr);
     padding: 5px;
     width: 600px;
     height: 600px;
-    grid-template: repeat(2, 1fr) / repeat(2, 1fr);
 }
 
 /* cell with no type */
