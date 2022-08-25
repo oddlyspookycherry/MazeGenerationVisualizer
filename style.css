@@ -1,3 +1,8 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+}
+
 #mazegrid {
     display: grid;
     background-color: gray;
@@ -7,7 +12,7 @@
     height: 600px;
 }
 
-/* cell with no type */
+/* cell with no type, only use for debug */
 .mazecell {
     background-color: purple;
 }

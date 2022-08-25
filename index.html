@@ -10,6 +10,11 @@
     <h1>Maze Generation Visualizer</h1>
     <input id="n rows" type="number" value="15">
     <input id="n cols" type="number" value="15">
+    <select id="method select">
+      <option value="all_passages">All Passages</option>
+      <option value="all_walls">All Walls</option>
+      <option value="randomized_depth_first_search">Randomized DFS</option>
+    </select>
     <button id="generate btn">Generate</button>
     <div id="mazegrid">
       <div class="mazecell"></div>
