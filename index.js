@@ -43,6 +43,7 @@ async function generate_maze(nrows, ncols, generation_method) {
     generation_method(nrows, ncols);
 }
 
+// TO-DO: read algorithms and see if better start with all passages/walls
 const gen_methods = {
     "all_passages": async function (nrows, ncols) {
         in_generation = true;

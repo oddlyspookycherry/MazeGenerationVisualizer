@@ -18,27 +18,34 @@
 }
 
 .mazecell.passage {
-    animation: passage_appear 1s forwards;
+    animation: passage_appear 1s ease-out forwards;
 }
 
 @keyframes passage_appear {
     0% {
         background-color: inherit;
+        transform: scale(0%);
     }
     100% {
         background-color: white;
+        transform: scale(100%);
     }
 }
 
 .mazecell.wall {
-    animation: wall_appear 1s forwards;
+    background-color: black;
+    animation: wall_appear 1s ease-out forwards;
 }
 
 @keyframes wall_appear {
     0% {
-        background-color: inherit;
+        transform: scale(130%);
+        transform: translate(15%);
+        opacity: 0.2;
     }
     100% {
-        background-color: black;
+        transform: scale(100%);
+        transform: translate(0%);
+        opacity: 1;
     }
 }
