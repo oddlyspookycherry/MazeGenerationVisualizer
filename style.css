@@ -5,9 +5,9 @@
 
 #mazegrid {
     display: grid;
-    background-color: gray;
+    background-color: grey;
     grid-template: repeat(2, 1fr) / repeat(2, 1fr);
-    padding: 5px;
+    border: thick solid black;
     width: 600px;
     height: 600px;
 }
@@ -15,37 +15,4 @@
 /* cell with no type, only use for debug */
 .mazecell {
     background-color: purple;
-}
-
-.mazecell.passage {
-    animation: passage_appear 1s ease-out forwards;
-}
-
-@keyframes passage_appear {
-    0% {
-        background-color: inherit;
-        transform: scale(0%);
-    }
-    100% {
-        background-color: white;
-        transform: scale(100%);
-    }
-}
-
-.mazecell.wall {
-    background-color: black;
-    animation: wall_appear 1s ease-out forwards;
-}
-
-@keyframes wall_appear {
-    0% {
-        transform: scale(130%);
-        transform: translate(15%);
-        opacity: 0.2;
-    }
-    100% {
-        transform: scale(100%);
-        transform: translate(0%);
-        opacity: 1;
-    }
 }

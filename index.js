@@ -1,83 +1,163 @@
 "use strict";
+import { sleep, getRndInteger } from '/utility_functions.js';
 
 const mazegrid = document.getElementById('mazegrid');
-const generate_btn = document.getElementById('generate btn');
-const nrowsinput = document.getElementById('n rows');
-const ncolsinput = document.getElementById('n cols');
-const methodinput = document.getElementById('method select');
-
-function sleep(duration_ms) {
-    return new Promise(resolve => setTimeout(resolve, duration_ms));
-}
+const generateBtn = document.getElementById('generateBtn');
+const nrowsinput = document.getElementById('nRows');
+const ncolsinput = document.getElementById('nCols');
+const methodinput = document.getElementById('methodSelect');
 
 // declarations
-let maze_arr = null;
-let anim_delay = 50;
-let in_generation = false;
+let mazeArr = null;
+let animDelay = 5;
+let inGeneration = false;
 
 const CellType = {
     passage: "passage",
-    wall: "wall"
+    wall: "wall",
+    blank: "blank"
 };
 
-function init_maze(nrows, ncols) {
+const Type2Col = {
+    "passage": "white",
+    "wall": "black",
+    "blank": "gray"
+}
+
+function initMaze(nrows, ncols) {
     mazegrid.innerHTML = '';
     mazegrid.style.gridTemplate = `repeat(${nrows}, 1fr) / repeat(${ncols}, 1fr)`;
-    maze_arr = new Array(nrows);
-    for (let i = 0; i < maze_arr.length; i++) {
-        maze_arr[i] = new Array(ncols);
+    mazeArr = new Array(nrows);
+    for (let i = 0; i < mazeArr.length; i++) {
+        mazeArr[i] = new Array(ncols);
+    }
+
+    // filling maze with blanks
+    for (let r = 0; r < nrows; r++) {
+        for (let c = 0; c < ncols; c++) {
+            const cell = document.createElement('div');
+            mazegrid.appendChild(cell);
+            mazeArr[r][c] = cell;
+            changeCell(r, c, CellType.blank);
+        }
     }
 }
 
-function fill_cell(row, col, type) {
-    maze_arr[row][col] = type;
-
-    const cell = document.createElement('div');
+function changeCell(row, col, type) {    
+    let cell = mazeArr[row][col]
+    cell.classList = '';
     cell.classList.add('mazecell', type);
-    cell.style.gridArea = `${row + 1} / ${col + 1} / span 1 / span 1`;
-    mazegrid.appendChild(cell);
+    cell.style.backgroundColor = Type2Col[type];
 }
 
-async function generate_maze(nrows, ncols, generation_method) {
-    init_maze(nrows, ncols);
+async function generateMaze(nrows, ncols, generation_method) {
+    initMaze(nrows, ncols);
     generation_method(nrows, ncols);
 }
 
-// TO-DO: read algorithms and see if better start with all passages/walls
-const gen_methods = {
-    "all_passages": async function (nrows, ncols) {
-        in_generation = true;
+const GenMethods = {
+    "all_passages": function (nrows, ncols) {
+        inGeneration = true;
         for (let r = 0; r < nrows; r++) {
             for (let c = 0; c < ncols; c++) {
-                fill_cell(r, c, CellType.passage);
-                await sleep(anim_delay);
+                changeCell(r, c, CellType.passage);
             }
         }
-        in_generation = false;
+        inGeneration = false;
     },
-    "all_walls": async function (nrows, ncols) {
-        in_generation = true;
+    "all_walls": function (nrows, ncols) {
+        inGeneration = true;
         for (let r = 0; r < nrows; r++) {
             for (let c = 0; c < ncols; c++) {
-                fill_cell(r, c, CellType.wall);
-                await sleep(anim_delay);
+                changeCell(r, c, CellType.wall);
             }
         }
-        in_generation = false;
+        inGeneration = false;
     },
     "randomized_depth_first_search": async function (nrows, ncols) {
-        in_generation = true;
-        in_generation = false;
+        inGeneration = true;
+        // Fill everything with walls
+        GenMethods.all_walls(nrows, ncols);
+
+        // Initialize stack
+        let activeCells = [];
+
+        // Choose a random starting point
+        let startRow = getRndInteger(0, nrows);
+        let startCol = getRndInteger(0, ncols);
+        changeCell(startRow, startCol, CellType.passage);
+        await sleep(animDelay);
+        activeCells.push([startRow, startCol]);
+
+        let directions = [
+            [0, 1],
+            [1, 0],
+            [0, -1],
+            [-1, 0]
+        ];
+
+        // Create a depth-first traversal
+        while (activeCells.length > 0) {
+            let curInd = Math.random() > 0.5 ? activeCells.length - 1 : getRndInteger(0, activeCells.length);
+            let curCoordnates = activeCells[curInd];
+
+            let randDirInd = getRndInteger(0, directions.length);
+            let validDir = false;
+            // Check if new coordinates are valid
+            for (let i = 0; i <= 4; i++) {
+                let randDir = directions[(randDirInd + i) % directions.length];
+                let [rowStep, colStep] = randDir;
+                let midRowCoord = curCoordnates[0] + rowStep;
+                let midColCoord = curCoordnates[1] + colStep;
+                let newRowCoord = curCoordnates[0] + 2 * rowStep;
+                let newColCoord = curCoordnates[1] + 2 * colStep;
+                if (newRowCoord >= 0 && newRowCoord < nrows && newColCoord >= 0 && newColCoord < ncols
+                    && mazeArr[newRowCoord][newColCoord].classList.contains("wall")) {
+                        changeCell(midRowCoord, midColCoord, CellType.passage);
+                        await sleep(animDelay);
+                        changeCell(newRowCoord, newColCoord, CellType.passage);
+                        await sleep(animDelay);
+                        activeCells.push([newRowCoord, newColCoord]);
+                        validDir = true;
+                        break;
+                    }
+            }
+            if (!validDir)
+                activeCells.splice(curInd, 1);
+        }
+        inGeneration = false;
+    },
+    "recursive_division": async function (nrows, ncols) {
+        inGeneration = true;
+        GenMethods.all_passages(nrows, ncols);
+        await GenMethods.separate_chamber(0, 0, nrows - 1, ncols - 1);
+        inGeneration = false;
+    },
+    "separate_chamber": async function (bottomLeftRow, bottomLeftCol, topRightRow, topRightCol) {
+        if (bottomLeftRow == topRightRow || bottomLeftCol == topRightCol) {
+            return;
+        }
+        let randRowInd = getRndInteger(bottomLeftRow, topRightRow + 1);
+        let randColInd = getRndInteger(bottomLeftCol, topRightCol + 1);
+        for (let i = bottomLeftRow; i <= topRightRow; i++) {
+            changeCell(i, randColInd);
+        }
+        for (let i = bottomLeftCol; i <= topRightCol; i++) {
+            changeCell(randRowInd, i);
+        }
+        GenMethods.separate_chamber(bottomLeftRow, bottomLeftCol, randRowInd, randColInd);
+        GenMethods.separate_chamber(randRowInd, randColInd, topRightRow, topRightCol);
+        // GenMethods.separate_chamber(bottomLeftRow, randColInd, topRightRow, randColInd);
+        // GenMethods.separate_chamber(bottomLeftRow, bottomLeftCol, randRowInd, randColInd);
     }
 };
 
 // main script
-init_maze(10, 10);
-
 // TO-DO: change button color while animation playing
-generate_btn.addEventListener('click', () => {
+generateBtn.addEventListener('click', () => {
     let nrows = parseInt(nrowsinput.value);
     let ncols = parseInt(ncolsinput.value);
     let method_name = methodinput.value;
-    if (!in_generation) { generate_maze(nrows, ncols, gen_methods[method_name]); }
+    if (!inGeneration)
+        generateMaze(nrows, ncols, GenMethods[method_name]);
 });
