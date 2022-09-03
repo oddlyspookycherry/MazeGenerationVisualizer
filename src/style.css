@@ -7,7 +7,7 @@
     display: grid;
     background-color: grey;
     grid-template: repeat(2, 1fr) / repeat(2, 1fr);
-    border: thick solid black;
+    border: 5px solid black;
     width: 600px;
     height: 600px;
 }

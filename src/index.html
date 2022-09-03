@@ -8,14 +8,16 @@
   </head>
   <body>
 
-    <!-- <h1>Maze Generation Visualizer</h1> -->
-    <input id="nRows" type="number" value="5">
-    <input id="nCols" type="number" value="5">
+    <h1>Maze Generation Visualizer</h1>
+    <input id="nDim" type="number" value="101">
     <select id="methodSelect">
       <option value="all_passages">All Passages</option>
       <option value="all_walls">All Walls</option>
-      <option value="randomized_depth_first_search">Randomized DFS</option>
-      <option value="recursive_division">Recusrive Division</option>
+      <option value="last_depth_first_search">DFS (last)</option>
+      <option value="first_depth_first_search">DFS (first)</option>
+      <option value="random_depth_first_search">DFS (random)</option>
+      <option value="mixed_depth_first_search">DFS (mixed)</option>
+      <option value="binary_tree">Binary Tree</option>
     </select>
     <button id="generateBtn">Generate</button>
     <div id="mazegrid"></div>
