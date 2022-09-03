@@ -3,16 +3,8 @@
     margin: 0;
 }
 
-#mazegrid {
+#mazeGrid {
     display: grid;
-    background-color: grey;
-    grid-template: repeat(2, 1fr) / repeat(2, 1fr);
-    border: 5px solid black;
     width: 600px;
     height: 600px;
-}
-
-/* cell with no type, only use for debug */
-.mazecell {
-    background-color: purple;
 }

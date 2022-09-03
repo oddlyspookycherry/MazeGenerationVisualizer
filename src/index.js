@@ -1,10 +1,11 @@
 "use strict";
 import { sleep, getRndInteger } from './utility_functions.js';
 
-const mazegrid = document.getElementById('mazegrid');
+const mazeGrid = document.getElementById('mazeGrid');
 const generateBtn = document.getElementById('generateBtn');
-const ndiminput = document.getElementById('nDim');
-const methodinput = document.getElementById('methodSelect');
+const sizeInput = document.getElementById('mazeSize');
+const methodInput = document.getElementById('methodSelect');
+const numExitsInput = document.getElementById('numExits');
 
 // declarations
 let mazeArr = null;
@@ -14,18 +15,16 @@ let inGeneration = false;
 const CellType = {
     passage: "passage",
     wall: "wall",
-    blank: "blank"
 };
 
 const Type2Col = {
     "passage": "white",
     "wall": "black",
-    "blank": "gray"
 }
 
 function initMaze(ndim) {
-    mazegrid.innerHTML = '';
-    mazegrid.style.gridTemplate = `repeat(${ndim}, 1fr) / repeat(${ndim}, 1fr)`;
+    mazeGrid.innerHTML = '';
+    mazeGrid.style.gridTemplate = `repeat(${ndim}, 1fr) / repeat(${ndim}, 1fr)`;
     mazeArr = new Array(ndim);
     for (let i = 0; i < mazeArr.length; i++) {
         mazeArr[i] = new Array(ndim);
@@ -35,9 +34,12 @@ function initMaze(ndim) {
     for (let r = 0; r < ndim; r++) {
         for (let c = 0; c < ndim; c++) {
             const cell = document.createElement('div');
-            mazegrid.appendChild(cell);
+            mazeGrid.appendChild(cell);
             mazeArr[r][c] = cell;
-            changeCell(r, c, CellType.blank);
+            if (r != 0 && c != 0 && r != ndim - 1 && c != ndim - 1)
+                changeCell(r, c, CellType.blank);
+            else
+                changeCell(r, c, CellType.wall);
         }
     }
 }
@@ -49,37 +51,34 @@ function changeCell(row, col, type) {
     cell.style.backgroundColor = Type2Col[type];
 }
 
-async function generateMaze(ndim, generation_method) {
+async function generateMaze(ndim, generation_method, numExits) {
     initMaze(ndim);
     generation_method(ndim);
+    GenMethods._make_exits(ndim, numExits);
 }
 
 const GenMethods = {
-    "all_passages": function (ndim) {
-        for (let r = 0; r < ndim; r++) {
-            for (let c = 0; c < ndim; c++) {
-                changeCell(r, c, CellType.passage);
-            }
-        }
+    "_make_exits": function(ndim, numExits) {
+        // IMPLEMENT MAKE EXITS
     },
-    "all_walls": function (ndim) {
+    "_fill_all": function (ndim, type) {
         for (let r = 0; r < ndim; r++) {
             for (let c = 0; c < ndim; c++) {
-                changeCell(r, c, CellType.wall);
+                changeCell(r, c, type);
             }
         }
     },
     "_base_depth_first_search": async function (ndim, backtrack_index_function) {
         inGeneration = true;
         // Fill everything with walls
-        GenMethods.all_walls(ndim);
+        GenMethods._fill_all(ndim, CellType.wall);
 
         // Initialize stack
         let activeCells = [];
 
         // Choose a random starting point
-        let startRow = getRndInteger(0, ndim);
-        let startCol = getRndInteger(0, ndim);
+        let startRow = getRndInteger(1, ndim, 2);
+        let startCol = getRndInteger(1, ndim, 2);;
         changeCell(startRow, startCol, CellType.passage);
         await sleep(animDelay);
         activeCells.push([startRow, startCol]);
@@ -106,10 +105,9 @@ const GenMethods = {
                 let midColCoord = curCoordnates[1] + colStep;
                 let newRowCoord = curCoordnates[0] + 2 * rowStep;
                 let newColCoord = curCoordnates[1] + 2 * colStep;
-                if (newRowCoord >= 0 && newRowCoord < ndim && newColCoord >= 0 && newColCoord < ndim
+                if (newRowCoord >= 1 && newRowCoord < ndim - 1 && newColCoord >= 1 && newColCoord < ndim - 1
                     && mazeArr[newRowCoord][newColCoord].classList.contains("wall")) {
                         changeCell(midRowCoord, midColCoord, CellType.passage);
-                        await sleep(animDelay);
                         changeCell(newRowCoord, newColCoord, CellType.passage);
                         await sleep(animDelay);
                         activeCells.push([newRowCoord, newColCoord]);
@@ -125,7 +123,7 @@ const GenMethods = {
     "last_depth_first_search": function (ndim) {
         GenMethods._base_depth_first_search(ndim, (length) => length - 1);
     },
-    "first_depth_first_search": function (ndim) {
+    "breadth_first_search": function (ndim) {
         GenMethods._base_depth_first_search(ndim, (length) => 0);
     },
     "random_depth_first_search": function (ndim) {
@@ -138,48 +136,75 @@ const GenMethods = {
     "binary_tree": async function (ndim) {
         inGeneration = true;
 
-        GenMethods.all_walls(ndim);
-        changeCell(ndim - 1, ndim - 1, CellType.passage);
-        await sleep(animDelay);
-        for (let r = ndim - 1; r >= 0; r -= 2) {
-            for (let c = ndim - 1; c >= 0; c -= 2) {
+        GenMethods._fill_all(ndim, CellType.wall);
+        for (let r = ndim - 2; r >= 1; r -= 2) {
+            for (let c = ndim - 2; c >= 1; c -= 2) {
                 changeCell(r, c, CellType.passage);
                 await sleep(animDelay);
-            }
-        }
-        for (let r = ndim - 1; r >= 0; r -= 2) {
-            for (let c = ndim - 1; c >= 0; c -= 2) {
-                if (r - 1 < 0 && c - 1 < 0) {
-                    continue;
+                if (r - 1 < 1 && c - 1 < 1) {
+                    break;
                 }
-                if (r - 1 < 0) {
+                if (r - 1 < 1) {
                     changeCell(r, c - 1, CellType.passage);
-                    await sleep(animDelay);
-                } else if (c - 1 < 0) {
+                } else if (c - 1 < 1) {
                     changeCell(r - 1, c, CellType.passage);
-                    await sleep(animDelay);
                 } else {
                     if (Math.random() > 0.5) {
                         changeCell(r, c - 1, CellType.passage);
-                        await sleep(animDelay);
                     } else {
                         changeCell(r - 1, c, CellType.passage);
-                        await sleep(animDelay);
                     }
                 }
             } 
         }
 
         inGeneration = false;
+    },
+    "_recursive_division_helper": async function (rowStart, rowEnd, colStart, colEnd) {
+        let rowDiff = rowEnd - rowStart;
+        let colDiff = colEnd - colStart;
+        if (rowDiff < 2 || colDiff < 2) {
+            return;
+        }
+        if (rowDiff > colDiff) {
+            let randomWallRow = getRndInteger(rowStart + 1, rowEnd, 2);
+            let randomPassageCol = getRndInteger(colStart, colEnd + 1, 2);
+            for (let c = colStart; c <= colEnd; c++) {
+                if (c == randomPassageCol)
+                    continue;
+                changeCell(randomWallRow, c, CellType.wall);
+                await sleep(animDelay);
+            }
+            await GenMethods._recursive_division_helper(rowStart, randomWallRow - 1, colStart, colEnd);
+            await GenMethods._recursive_division_helper(randomWallRow + 1, rowEnd, colStart, colEnd);
+        } else {
+            let randomWallCol = getRndInteger(colStart + 1, colEnd, 2);
+            let randomPassageRow = getRndInteger(rowStart, rowEnd + 1, 2);
+            for (let r = rowStart; r <= rowEnd; r++) {
+                if (r == randomPassageRow)
+                    continue;
+                changeCell(r, randomWallCol, CellType.wall);
+                await sleep(animDelay);
+            }
+            await GenMethods._recursive_division_helper(rowStart, rowEnd, colStart, randomWallCol - 1);
+            await GenMethods._recursive_division_helper(rowStart, rowEnd, randomWallCol + 1, colEnd);
+        }
+    },
+    "recursive_division": async function (ndim) {
+        inGeneration = true;
+        await GenMethods._recursive_division_helper(1, ndim - 2, 1, ndim - 2);
+        inGeneration = false;
     }
 };
 
 // main script
 initMaze(10);
-// TO-DO: change button color while animation playing
+// TO-DO: change button color while animation playing, add button to toggle exit/entrance generation
 generateBtn.addEventListener('click', () => {
-    let ndim = parseInt(ndiminput.value);
-    let method_name = methodinput.value;
+    // converting the input (dimension of the passage grid) to maze grid dimension including exterior walls
+    let ndim = 2 * parseInt(sizeInput.value) + 1;
+    let method = methodInput.value;
+    let numExits = numExitsInput.value;
     if (!inGeneration)
-        generateMaze(ndim, GenMethods[method_name]);
+        generateMaze(ndim, GenMethods[method], numExits);
 });

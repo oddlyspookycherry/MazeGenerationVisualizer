@@ -9,18 +9,18 @@
   <body>
 
     <h1>Maze Generation Visualizer</h1>
-    <input id="nDim" type="number" value="101">
+    <input id="mazeSize" type="number" value="50">
+    <input id="numExits" type="number" value="2">
     <select id="methodSelect">
-      <option value="all_passages">All Passages</option>
-      <option value="all_walls">All Walls</option>
+      <option value="recursive_division">Recursive Division</option>
       <option value="last_depth_first_search">DFS (last)</option>
-      <option value="first_depth_first_search">DFS (first)</option>
       <option value="random_depth_first_search">DFS (random)</option>
       <option value="mixed_depth_first_search">DFS (mixed)</option>
+      <option value="breadth_first_search">BFS</option>
       <option value="binary_tree">Binary Tree</option>
     </select>
     <button id="generateBtn">Generate</button>
-    <div id="mazegrid"></div>
+    <div id="mazeGrid"></div>
 
     <script type="module" src="index.js"></script>
     <script type="module" src="utility_functions.js"></script>
