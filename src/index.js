@@ -6,20 +6,33 @@ const generateBtn = document.getElementById('generateBtn');
 const sizeInput = document.getElementById('mazeSize');
 const methodInput = document.getElementById('methodSelect');
 const numExitsInput = document.getElementById('numExits');
+const wallColorInput = document.getElementById('wallColor');
+const animSpeedInput = document.getElementById('animSpeed');
 
 // declarations
 let mazeArr = null;
-let animDelay = 5;
+let baseAnimDelay = 20;
+let animDelay = baseAnimDelay;
 let inGeneration = false;
+
+const MAX_MAZE_SIZE = 70;
 
 const CellType = {
     passage: "passage",
     wall: "wall",
 };
 
-const Type2Col = {
+let Type2Col = {
     "passage": "white",
-    "wall": "black",
+    "wall": wallColorInput.value
+}
+
+wallColorInput.onchange = () => {
+    Type2Col["wall"] = wallColorInput.value;
+};
+
+animSpeedInput.onchange = () => {
+    animDelay = baseAnimDelay * (1 / animSpeedInput.value);
 }
 
 function initMaze(ndim) {
@@ -37,7 +50,7 @@ function initMaze(ndim) {
             mazeGrid.appendChild(cell);
             mazeArr[r][c] = cell;
             if (r != 0 && c != 0 && r != ndim - 1 && c != ndim - 1)
-                changeCell(r, c, CellType.blank);
+                changeCell(r, c, CellType.passage);
             else
                 changeCell(r, c, CellType.wall);
         }
@@ -52,14 +65,45 @@ function changeCell(row, col, type) {
 }
 
 async function generateMaze(ndim, generation_method, numExits) {
+    generationOn();
     initMaze(ndim);
-    generation_method(ndim);
-    GenMethods._make_exits(ndim, numExits);
+    await generation_method(ndim);
+    await GenMethods._make_exits(ndim, numExits);
+    generationOff();
+}
+
+function generationOn() {
+    inGeneration = true;
+    generateBtn.style.backgroundColor = "red";
+}
+
+function generationOff() {
+    inGeneration = false;
+    generateBtn.style.backgroundColor = "";
 }
 
 const GenMethods = {
-    "_make_exits": function(ndim, numExits) {
-        // IMPLEMENT MAKE EXITS
+    "_make_exits": async function(ndim, numExits) {
+        let wallCoordFormats = [
+            [0, undefined],
+            [ndim - 1, undefined],
+            [undefined, 0],
+            [undefined, ndim - 1]
+        ]
+        let k = getRndInteger(0, wallCoordFormats.length);
+        const randIndPool = [];
+        for (let i = 1; i < ndim - 1; i += 2) {
+            randIndPool.push(i);
+        }
+        for (let i = 0; i < numExits; i++, k = (k + 1) % 4) {
+            let randPoolIndex = getRndInteger(0, randIndPool.length);
+            let randExitIndex = randIndPool[randPoolIndex];
+            randIndPool.splice(randPoolIndex, 1);
+            let curFormat = [...wallCoordFormats[k]]
+            curFormat[curFormat.indexOf(undefined)] = randExitIndex;
+            changeCell(...curFormat, CellType.passage);
+            await sleep(animDelay);
+        }
     },
     "_fill_all": function (ndim, type) {
         for (let r = 0; r < ndim; r++) {
@@ -69,7 +113,6 @@ const GenMethods = {
         }
     },
     "_base_depth_first_search": async function (ndim, backtrack_index_function) {
-        inGeneration = true;
         // Fill everything with walls
         GenMethods._fill_all(ndim, CellType.wall);
 
@@ -118,24 +161,21 @@ const GenMethods = {
             if (!validDir)
                 activeCells.splice(curInd, 1);
         }
-        inGeneration = false;
     },
-    "last_depth_first_search": function (ndim) {
-        GenMethods._base_depth_first_search(ndim, (length) => length - 1);
+    "last_depth_first_search": async function (ndim) {
+        await GenMethods._base_depth_first_search(ndim, (length) => length - 1);
     },
-    "breadth_first_search": function (ndim) {
-        GenMethods._base_depth_first_search(ndim, (length) => 0);
+    "breadth_first_search": async function (ndim) {
+        await GenMethods._base_depth_first_search(ndim, (length) => 0);
     },
-    "random_depth_first_search": function (ndim) {
-        GenMethods._base_depth_first_search(ndim, (length) => getRndInteger(0, length));
+    "random_depth_first_search": async function (ndim) {
+        await GenMethods._base_depth_first_search(ndim, (length) => getRndInteger(0, length));
     },
-    "mixed_depth_first_search": function (ndim) {
-        GenMethods._base_depth_first_search(ndim, (length) =>
+    "mixed_depth_first_search": async function (ndim) {
+        await GenMethods._base_depth_first_search(ndim, (length) =>
             Math.random() > 0.35 ? length - 1 : getRndInteger(0, length));
     },
     "binary_tree": async function (ndim) {
-        inGeneration = true;
-
         GenMethods._fill_all(ndim, CellType.wall);
         for (let r = ndim - 2; r >= 1; r -= 2) {
             for (let c = ndim - 2; c >= 1; c -= 2) {
@@ -157,8 +197,6 @@ const GenMethods = {
                 }
             } 
         }
-
-        inGeneration = false;
     },
     "_recursive_division_helper": async function (rowStart, rowEnd, colStart, colEnd) {
         let rowDiff = rowEnd - rowStart;
@@ -191,20 +229,46 @@ const GenMethods = {
         }
     },
     "recursive_division": async function (ndim) {
-        inGeneration = true;
         await GenMethods._recursive_division_helper(1, ndim - 2, 1, ndim - 2);
-        inGeneration = false;
     }
 };
 
 // main script
-initMaze(10);
-// TO-DO: change button color while animation playing, add button to toggle exit/entrance generation
-generateBtn.addEventListener('click', () => {
+initMaze(2 * parseInt(sizeInput.value) + 1);
+
+sizeInput.onchange = () => {
+    let newDim = 2 * parseInt(sizeInput.value) + 1;
+    if (newDim <= MAX_MAZE_SIZE) {
+        initMaze(2 * parseInt(sizeInput.value) + 1);
+    }
+}
+
+// TO-DO: change button color while animation playing
+generateBtn.onclick = () => {
     // converting the input (dimension of the passage grid) to maze grid dimension including exterior walls
-    let ndim = 2 * parseInt(sizeInput.value) + 1;
+    let nsize = parseInt(sizeInput.value);
+    let ndim = 2 * nsize + 1;
     let method = methodInput.value;
     let numExits = numExitsInput.value;
+
+    if (!validateInput(nsize, numExits)) {
+        return;
+    }
+
     if (!inGeneration)
         generateMaze(ndim, GenMethods[method], numExits);
-});
+};
+
+
+function validateInput(nsize, numExits) {
+    if (nsize > MAX_MAZE_SIZE) {
+        alert('Maze size too large!');
+        return false;
+    }
+    // artificial restriction due to _make_exits implementation, more exits would be redundant
+    if (numExits > nsize) {
+        alert('Too many exits!');
+        return false;
+    }
+    return true;
+}

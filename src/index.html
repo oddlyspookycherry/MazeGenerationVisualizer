@@ -7,19 +7,39 @@
     <title>Maze Generation Visualizer</title>
   </head>
   <body>
-
-    <h1>Maze Generation Visualizer</h1>
-    <input id="mazeSize" type="number" value="50">
-    <input id="numExits" type="number" value="2">
-    <select id="methodSelect">
-      <option value="recursive_division">Recursive Division</option>
-      <option value="last_depth_first_search">DFS (last)</option>
-      <option value="random_depth_first_search">DFS (random)</option>
-      <option value="mixed_depth_first_search">DFS (mixed)</option>
-      <option value="breadth_first_search">BFS</option>
-      <option value="binary_tree">Binary Tree</option>
-    </select>
-    <button id="generateBtn">Generate</button>
+    <div id="title">
+      <h1><strong>Maze Generation Visualizer</strong></h1>
+    </div>
+    <div id="userInput">
+      <div id="sizeInput" class="inputBlock">
+        <span><strong>Maze size</strong></span>
+        <input id="mazeSize" class="inputUI" type="number" value="30" min="1" oninput="validity.valid||(value='');">
+      </div>
+      <div id="numExitsInput" class="inputBlock">
+        <span><strong>Number of exits</strong></span>
+        <input id="numExits" class="inputUI" type="number" value="2" min="0" oninput="validity.valid||(value='');">
+      </div>
+      <div id="methodInput" class="inputBlock">
+        <span><strong>Generation method</strong></span>
+        <select id="methodSelect" class="inputUI">
+          <option value="recursive_division">Recursive Division</option>
+          <option value="last_depth_first_search">DFS (last)</option>
+          <option value="random_depth_first_search">DFS (random)</option>
+          <option value="mixed_depth_first_search">DFS (mixed)</option>
+          <option value="breadth_first_search">BFS</option>
+          <option value="binary_tree">Binary Tree</option>
+        </select>
+      </div>
+      <div id="wallColorInput" class="inputBlock">
+        <span><strong>Wall color</strong></span>
+        <input id="wallColor" class="inputUI" type="color" value="#000000">
+      </div>
+      <div id="animSpeedInput" class="inputBlock">
+        <span><strong>Animation speed</strong></span>
+        <input id="animSpeed" class="inputUI" type="range" min="0" max="2" value="1" step="0.01">
+      </div>
+      <button id="generateBtn" class="inputUI">Generate</button>
+    </div>
     <div id="mazeGrid"></div>
 
     <script type="module" src="index.js"></script>
