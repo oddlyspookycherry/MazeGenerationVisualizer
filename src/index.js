@@ -20,11 +20,13 @@ const MAX_MAZE_SIZE = 70;
 const CellType = {
     passage: "passage",
     wall: "wall",
+    exit: "exit"
 };
 
 let Type2Col = {
     "passage": "white",
-    "wall": wallColorInput.value
+    "wall": wallColorInput.value,
+    "exit": "#fff700"
 }
 
 wallColorInput.onchange = () => {
@@ -101,7 +103,7 @@ const GenMethods = {
             randIndPool.splice(randPoolIndex, 1);
             let curFormat = [...wallCoordFormats[k]]
             curFormat[curFormat.indexOf(undefined)] = randExitIndex;
-            changeCell(...curFormat, CellType.passage);
+            changeCell(...curFormat, CellType.exit);
             await sleep(animDelay);
         }
     },
@@ -236,13 +238,6 @@ const GenMethods = {
 // main script
 initMaze(2 * parseInt(sizeInput.value) + 1);
 
-sizeInput.onchange = () => {
-    let newDim = 2 * parseInt(sizeInput.value) + 1;
-    if (newDim <= MAX_MAZE_SIZE) {
-        initMaze(2 * parseInt(sizeInput.value) + 1);
-    }
-}
-
 generateBtn.onclick = () => {
     // converting the input (dimension of the passage grid) to maze grid dimension including exterior walls
     let nsize = parseInt(sizeInput.value);
@@ -250,12 +245,9 @@ generateBtn.onclick = () => {
     let method = methodInput.value;
     let numExits = numExitsInput.value;
 
-    if (!validateInput(nsize, numExits)) {
-        return;
-    }
-
-    if (!inGeneration)
+    if (!inGeneration && validateInput(nsize, numExits)) {
         generateMaze(ndim, GenMethods[method], numExits);
+    }
 };
 
 

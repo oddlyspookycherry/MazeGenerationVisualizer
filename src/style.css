@@ -18,7 +18,7 @@ input[type=number] {
 }
 
 body {
-    background-image: url(./bg.jpg);
+    background-image: url(../resources/bg.jpg);
     font-family: 'Muli', sans-serif;
     display: flex;
     flex-direction: column;
@@ -42,6 +42,7 @@ footer {
     position: fixed;
     bottom: 20px;
     right: 30px;
+    font-size: 1.2em;
 }
 
 .inputBlock {
