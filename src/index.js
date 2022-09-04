@@ -14,7 +14,6 @@ let mazeArr = null;
 let baseAnimDelay = 20;
 let animDelay = baseAnimDelay;
 let inGeneration = false;
-
 const MAX_MAZE_SIZE = 70;
 
 const CellType = {
@@ -45,7 +44,7 @@ function initMaze(ndim) {
         mazeArr[i] = new Array(ndim);
     }
 
-    // filling maze with blanks
+    // filling maze with passages
     for (let r = 0; r < ndim; r++) {
         for (let c = 0; c < ndim; c++) {
             const cell = document.createElement('div');
@@ -115,10 +114,8 @@ const GenMethods = {
         }
     },
     "_base_depth_first_search": async function (ndim, backtrack_index_function) {
-        // Fill everything with walls
         GenMethods._fill_all(ndim, CellType.wall);
 
-        // Initialize stack
         let activeCells = [];
 
         // Choose a random starting point
@@ -135,7 +132,7 @@ const GenMethods = {
             [-1, 0]
         ];
 
-        // Create a depth-first traversal
+        // Create a traversal
         while (activeCells.length > 0) {
             let curInd = backtrack_index_function(activeCells.length);
             let curCoordnates = activeCells[curInd];
@@ -179,6 +176,7 @@ const GenMethods = {
     },
     "binary_tree": async function (ndim) {
         GenMethods._fill_all(ndim, CellType.wall);
+        // only choosing up or left 
         for (let r = ndim - 2; r >= 1; r -= 2) {
             for (let c = ndim - 2; c >= 1; c -= 2) {
                 changeCell(r, c, CellType.passage);
@@ -206,6 +204,7 @@ const GenMethods = {
         if (rowDiff < 2 || colDiff < 2) {
             return;
         }
+        // if the chamber is "tall" divide it horizontally
         if (rowDiff > colDiff) {
             let randomWallRow = getRndInteger(rowStart + 1, rowEnd, 2);
             let randomPassageCol = getRndInteger(colStart, colEnd + 1, 2);
@@ -217,6 +216,7 @@ const GenMethods = {
             }
             await GenMethods._recursive_division_helper(rowStart, randomWallRow - 1, colStart, colEnd);
             await GenMethods._recursive_division_helper(randomWallRow + 1, rowEnd, colStart, colEnd);
+        // if the chamber is "wide" or square divide it vertically
         } else {
             let randomWallCol = getRndInteger(colStart + 1, colEnd, 2);
             let randomPassageRow = getRndInteger(rowStart, rowEnd + 1, 2);
