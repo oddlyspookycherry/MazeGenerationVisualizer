@@ -3,13 +3,13 @@
 * {
     box-sizing: border-box;
     margin: 0;
+    font-size: 1em;
 }
 
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
-  margin: 0;
 }
 
 /* Firefox */
@@ -17,13 +17,13 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
-body {
+html, body {
     background-image: url(../resources/bg.jpg);
     font-family: 'Muli', sans-serif;
     display: flex;
+    width: 100%;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
 }
 
 input, select, button, h1, span {
@@ -32,22 +32,32 @@ input, select, button, h1, span {
 
 h1 {
     margin: 10px 0;
+    font-size: 1.3rem;
 }
 
 input {
-    font-weight: bold;    
+    font-weight: bold;   
 }
 
 footer {
-    position: fixed;
+    position: absolute;
     bottom: 20px;
     right: 30px;
     font-size: 1.2em;
 }
 
+@media only screen and (max-width: 1300px) {
+    footer {
+        margin: 10px 0;
+        position: static;
+        display: block;
+        font-size: 0.95em;
+    }
+}
+
 .inputBlock {
     display: flex;
-    width: 500px;
+    max-width: 100%;
     justify-content: space-between;
 }
 
@@ -56,15 +66,12 @@ footer {
     background-color: #f0932b;
     border-radius: 10px;
     padding: 4px 4px;
+    max-width: 50%;
     transition: background-color 0.5s ease-out;
 }
 
 .inputUI:hover {
     background-color: #33cc33;
-}
-
-#generateBtn {
-    font-size: 1em;
 }
 
 #wallColor {
@@ -74,11 +81,15 @@ footer {
 }
 
 #userInput {
-    margin: 0px 0px 10px;
+    margin-bottom: 10px;
+    width: 500px;
+    max-width: 90vw;
 }
 
 #mazeGrid {
     display: grid;
     width: 500px;
+    max-width: 90vw;
     height: 500px;
+    max-height: 90vw;
 }
