@@ -18,8 +18,7 @@ input[type=number] {
 }
 
 body {
-    /* background-color: #cc3399; */
-    background-image: url(../resources/bg.jpg);
+    background-image: url(./bg.jpg);
     font-family: 'Muli', sans-serif;
     display: flex;
     flex-direction: column;

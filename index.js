@@ -243,7 +243,6 @@ sizeInput.onchange = () => {
     }
 }
 
-// TO-DO: change button color while animation playing
 generateBtn.onclick = () => {
     // converting the input (dimension of the passage grid) to maze grid dimension including exterior walls
     let nsize = parseInt(sizeInput.value);
