@@ -39,6 +39,12 @@ input {
     font-weight: bold;    
 }
 
+footer {
+    position: fixed;
+    bottom: 20px;
+    right: 30px;
+}
+
 .inputBlock {
     display: flex;
     width: 500px;
