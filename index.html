@@ -14,12 +14,12 @@
       <div id="sizeInput" class="inputBlock">
         <span><strong>Maze size</strong></span>
         <input id="mazeSize" class="inputUI" type="number" value="30" min="1"
-          onkeypress="return event.charCode >= 48" onchange="if (this.value == ''){this.value = min};">
+          onkeypress="return event.charCode >= 48" onchange="if (this.value < min){this.value = min};">
       </div>
       <div id="numExitsInput" class="inputBlock">
         <span><strong>Number of exits</strong></span>
         <input id="numExits" class="inputUI" type="number" value="2" min="0"
-          onkeypress="return event.charCode >= 48" onchange="if (this.value == ''){this.value = min};">
+          onkeypress="return event.charCode >= 48" onchange="if (this.value < min){this.value = min};">
       </div>
       <div id="methodInput" class="inputBlock">
         <span><strong>Generation method</strong></span>
