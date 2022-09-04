@@ -40,18 +40,18 @@ input {
 }
 
 footer {
-    position: absolute;
-    bottom: 20px;
-    right: 30px;
+    position: static;
+    width: 95vw;
+    text-align: right;
     font-size: 1.2em;
+    transform: translateY(-100%);
 }
 
-@media only screen and (max-width: 1300px) {
+@media only screen and (max-width: 1200px) {
     footer {
-        margin: 10px 0;
-        position: static;
-        display: block;
+        text-align: center;
         font-size: 0.95em;
+        transform: translateY(0%);
     }
 }
 
