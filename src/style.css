@@ -17,8 +17,15 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
+html {
+    background: url(../resources/bg.jpg) no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
 html, body {
-    background-image: url(../resources/bg.jpg);
     font-family: 'Muli', sans-serif;
     display: flex;
     width: 100%;
@@ -45,15 +52,6 @@ footer {
     text-align: right;
     font-size: 1.2em;
     transform: translateY(-100%);
-}
-
-@media only screen and (max-width: 1200px), (min-height: 800px) {
-    footer {
-        text-align: center;
-        font-size: 0.95em;
-        margin-top: 10px;
-        transform: translateY(0%);
-    }
 }
 
 .inputBlock {
@@ -93,4 +91,13 @@ footer {
     max-width: 90vw;
     height: 500px;
     max-height: 90vw;
+}
+
+@media only screen and (max-width: 1200px), (min-height: 800px) {
+    footer {
+        text-align: center;
+        font-size: 0.95em;
+        margin-top: 10px;
+        transform: translateY(0%);
+    }
 }
