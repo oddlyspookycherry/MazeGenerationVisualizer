@@ -51,6 +51,7 @@ footer {
     footer {
         text-align: center;
         font-size: 0.95em;
+        margin-top: 10px;
         transform: translateY(0%);
     }
 }
