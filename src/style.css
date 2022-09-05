@@ -47,7 +47,7 @@ footer {
     transform: translateY(-100%);
 }
 
-@media only screen and (max-width: 1200px) {
+@media only screen and (max-width: 1200px), (min-height: 800px) {
     footer {
         text-align: center;
         font-size: 0.95em;
