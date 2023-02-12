@@ -7,3 +7,5 @@ Algorithms included:
   - Recursive Division
   - Binary Tree
   - Breadth First Search
+
+Demo: https://oddlyspookycherry.github.io/MazeGenerationVisualizer/
